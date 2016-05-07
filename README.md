@@ -1,4 +1,4 @@
-# babel-loader [![NPM Status](https://img.shields.io/npm/v/babel-loader.svg?style=flat)](https://www.npmjs.com/package/babel-loader) [![Build Status](https://travis-ci.org/babel/babel-loader.svg?branch=master)](https://travis-ci.org/babel/babel-loader) [![codecov](https://codecov.io/gh/babel/babel-loader/branch/master/graph/badge.svg)](https://codecov.io/gh/babel/babel-loader)
+# babel-loader [![Build Status](https://travis-ci.org/babel/babel-loader.svg?branch=master)](https://travis-ci.org/babel/babel-loader)
   > Babel is a compiler for writing next generation JavaScript.
 
   This package allows transpiling JavaScript files using [Babel](https://github.com/babel/babel) and [webpack](https://github.com/webpack/webpack).
@@ -25,7 +25,7 @@ __Note:__ If you're upgrading from babel 5 to babel 6, please take a look [at th
 module: {
   loaders: [
     {
-      test: /\.js$/,
+      test: /\.jsx?$/,
       exclude: /(node_modules|bower_components)/,
       loader: 'babel-loader',
       query: {
@@ -46,7 +46,7 @@ You can pass options to the loader by writing them as a [query string](https://g
 module: {
   loaders: [
     {
-      test: /\.js$/,
+      test: /\.jsx?$/,
       exclude: /(node_modules|bower_components)/,
       loader: 'babel-loader?presets[]=es2015'
     }
@@ -60,7 +60,7 @@ module: {
 module: {
   loaders: [
     {
-      test: /\.js$/,
+      test: /\.jsx?$/,
       exclude: /(node_modules|bower_components)/,
       loader: 'babel-loader',
       query: {
@@ -75,7 +75,7 @@ module: {
 
   * `cacheDirectory`: Default `false`. When set, the given directory will be used to cache the results of the loader. Future webpack builds will attempt to read from the cache to avoid needing to run the potentially expensive Babel recompilation process on each run. If the value is blank (`loader: 'babel-loader?cacheDirectory'`) or `true` (`loader: babel-loader?cacheDirectory=true`) the loader will use the default cache directory in `node_modules/.cache/babel-loader` or fallback to the default OS temporary file directory if no `node_modules` folder could be found in any root directory.
 
-  * `cacheIdentifier`: Default is a string composed by the babel-core's version, the babel-loader's version, the contents of .babelrc file if it exists and the value of the environment variable `BABEL_ENV` with a fallback to the `NODE_ENV` environment variable. This can be set to a custom value to force cache busting if the identifier changes.
+  * `cacheIdentifier`: Default is a string composed by the babel-core's version, the babel-loader's version and the contents of .babelrc file if it exists. This can set to a custom value to force cache busting if the identifier changes.
 
 
   __Note:__ The `sourceMap` option is ignored, instead sourceMaps are automatically enabled when webpack is configured to use them (via the `devtool` config option).
@@ -112,7 +112,7 @@ loaders: [
   // the 'transform-runtime' plugin tells babel to require the runtime
   // instead of inlining it.
   {
-    test: /\.js$/,
+    test: /\.jsx?$/,
     exclude: /(node_modules|bower_components)/,
     loader: 'babel-loader',
     query: {
@@ -128,7 +128,7 @@ loaders: [
 Since [babel-plugin-transform-runtime](https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-runtime) includes a polyfill that includes a custom [regenerator runtime](https://github.com/facebook/regenerator/blob/master/packages/regenerator-runtime/runtime.js) and [core.js](https://github.com/zloirock/core-js), the following usual shimming method using `webpack.ProvidePlugin` will not work:
 
 ```
-ERROR in ./frontend/src/main.js
+ERROR in ./frontend/src/main.jsx
 Module build failed: Error: ENOENT, open 'true/350c59cae6b7bce3bb58c8240147581bfdc9cccc.json.gzip'
  @ multi app
 ```
@@ -139,7 +139,7 @@ That means that most likely, you're not setting the options correctly, and you'r
 ```javascript
 loaders: [
   {
-    test: /\.js$/,
+    test: /\.jsx?$/,
     exclude: /(node_modules|bower_components)/,
     loader: 'babel?cacheDirectory=true'
   }
@@ -151,7 +151,7 @@ That's not the correct way of setting boolean values. You should do instead:
 ```javascript
 loaders: [
   {
-    test: /\.js$/,
+    test: /\.jsx?$/,
     exclude: /(node_modules|bower_components)/,
     loader: 'babel?cacheDirectory'
   }
@@ -165,7 +165,7 @@ loaders: [
   // the optional 'runtime' transformer tells babel to require the runtime
   // instead of inlining it.
   {
-    test: /\.js$/,
+    test: /\.jsx?$/,
     exclude: /(node_modules|bower_components)/,
     loader: 'babel',
     query: {
