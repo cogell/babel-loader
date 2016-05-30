@@ -105,7 +105,7 @@ module: {
 
   See the [docs](http://babeljs.io/docs/plugins/transform-runtime/) for more information.
 
-  **NOTE:** You must run `npm install babel-plugin-transform-runtime --save-dev` to include this in your project and `babel-runtime` itself as a dependency with `npm install babel-runtime --save`.
+  **NOTE:** You must run `npm install babel-plugin-transform-runtime --save-dev` to include this in your project.
 
 ```javascript
 loaders: [
@@ -167,6 +167,58 @@ require('babel-runtime/core-js/promise').default = require('bluebird');
 // ...
 
 require('./app');
+```
+
+### using `cacheDirectory` fails with ENOENT Error
+
+If using cacheDirectory results in an error similar to the following:
+
+```
+ERROR in ./frontend/src/main.js
+Module build failed: Error: ENOENT, open 'true/350c59cae6b7bce3bb58c8240147581bfdc9cccc.json.gzip'
+ @ multi app
+```
+(notice the `true/` in the filepath)
+
+That means that most likely, you're not setting the options correctly, and you're doing something similar to:
+
+```javascript
+loaders: [
+  {
+    test: /\.jsx?$/,
+    exclude: /(node_modules|bower_components)/,
+    loader: 'babel?cacheDirectory=true'
+  }
+]
+```
+
+That's not the correct way of setting boolean values. You should do instead:
+
+```javascript
+loaders: [
+  {
+    test: /\.jsx?$/,
+    exclude: /(node_modules|bower_components)/,
+    loader: 'babel?cacheDirectory'
+  }
+]
+```
+
+or use the [query](https://webpack.github.io/docs/using-loaders.html#query-parameters) property:
+
+```javascript
+loaders: [
+  // the optional 'runtime' transformer tells babel to require the runtime
+  // instead of inlining it.
+  {
+    test: /\.jsx?$/,
+    exclude: /(node_modules|bower_components)/,
+    loader: 'babel',
+    query: {
+      cacheDirectory: true
+    }
+  }
+]
 ```
 
 ### The node API for `babel` has been moved to `babel-core`.
