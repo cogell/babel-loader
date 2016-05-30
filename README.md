@@ -105,7 +105,7 @@ module: {
 
   See the [docs](http://babeljs.io/docs/plugins/transform-runtime/) for more information.
 
-  **NOTE:** You must run `npm install babel-plugin-transform-runtime --save-dev` to include this in your project and `babel-runtime` itself as a dependency with `npm install babel-runtime --save`.
+  **NOTE:** You must run `npm install babel-plugin-transform-runtime --save-dev` to include this in your project.
 
 ```javascript
 loaders: [
@@ -127,8 +127,54 @@ loaders: [
 
 Since [babel-plugin-transform-runtime](https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-runtime) includes a polyfill that includes a custom [regenerator runtime](https://github.com/facebook/regenerator/blob/master/packages/regenerator-runtime/runtime.js) and [core.js](https://github.com/zloirock/core-js), the following usual shimming method using `webpack.ProvidePlugin` will not work:
 
+```javascript
+// ...
+        new webpack.ProvidePlugin({
+            'Promise': 'bluebird'
+        }),
+// ...
 ```
-ERROR in ./frontend/src/main.jsx
+
+The following approach will not work either:
+
+```javascript
+require('babel-runtime/core-js/promise').default = require('bluebird');
+
+var promise = new Promise;
+```
+
+which outputs to (using `runtime`):
+
+```javascript
+'use strict';
+
+var _Promise = require('babel-runtime/core-js/promise')['default'];
+
+require('babel-runtime/core-js/promise')['default'] = require('bluebird');
+
+var promise = new _Promise();
+```
+
+The previous `Promise` library is referenced and used before it is overridden.
+
+One approach is to have a "bootstrap" step in your application that would first override the default globals before your application:
+
+```javascript
+// bootstrap.js
+
+require('babel-runtime/core-js/promise').default = require('bluebird');
+
+// ...
+
+require('./app');
+```
+
+### using `cacheDirectory` fails with ENOENT Error
+
+If using cacheDirectory results in an error similar to the following:
+
+```
+ERROR in ./frontend/src/main.js
 Module build failed: Error: ENOENT, open 'true/350c59cae6b7bce3bb58c8240147581bfdc9cccc.json.gzip'
  @ multi app
 ```
@@ -173,73 +219,6 @@ loaders: [
     }
   }
 ]
-```
-
-### The node API for `babel` has been moved to `babel-core`.
-
-If you receive this message it means that you have the npm package `babel` installed and use the short notation of the loader in the webpack config:
-```js
-  {
-    test: /\.js$/,
-    loader: 'babel',
-  }
-```
-
-Webpack then tries to load the `babel` package instead of the `babel-loader`.
-
-To fix this you should uninstall the npm package `babel` as it is deprecated in babel v6. (instead install `babel-cli` or `babel-core`)
-In the case one of your dependencies is installing `babel` and you cannot uninstall it yourself, use the complete name of the loader in the webpack config:
-```js
-  {
-    test: /\.js$/,
-    loader: 'babel-loader',
-  }
-```
-
-### custom polyfills (e.g. Promise library)
-
-Since Babel includes a polyfill that includes a custom [regenerator runtime](https://github.com/facebook/regenerator/blob/master/runtime.js) and [core.js](https://github.com/zloirock/core-js), the following usual shimming method using `webpack.ProvidePlugin` will not work:
-
-```javascript
-// ...
-        new webpack.ProvidePlugin({
-            'Promise': 'bluebird'
-        }),
-// ...
-```
-
-The following approach will not work either:
-
-```javascript
-require('babel-runtime/core-js/promise').default = require('bluebird');
-
-var promise = new Promise;
-```
-
-which outputs to (using `runtime`):
-
-```javascript
-'use strict';
-
-var _Promise = require('babel-runtime/core-js/promise')['default'];
-
-require('babel-runtime/core-js/promise')['default'] = require('bluebird');
-
-var promise = new _Promise();
-```
-
-The previous `Promise` library is referenced and used before it is overridden.
-
-One approach is to have a "bootstrap" step in your application that would first override the default globals before your application:
-
-```javascript
-// bootstrap.js
-
-require('babel-runtime/core-js/promise').default = require('bluebird');
-
-// ...
-
-require('./app');
 ```
 
 ### The node API for `babel` has been moved to `babel-core`.
