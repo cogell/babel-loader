@@ -75,7 +75,7 @@ module: {
 
   * `cacheDirectory`: Default `false`. When set, the given directory will be used to cache the results of the loader. Future webpack builds will attempt to read from the cache to avoid needing to run the potentially expensive Babel recompilation process on each run. If the value is blank (`loader: 'babel-loader?cacheDirectory'`) or `true` (`loader: babel-loader?cacheDirectory=true`) the loader will use the default cache directory in `node_modules/.cache/babel-loader` or fallback to the default OS temporary file directory if no `node_modules` folder could be found in any root directory.
 
-  * `cacheIdentifier`: Default is a string composed by the babel-core's version, the babel-loader's version and the contents of .babelrc file if it exists. This can set to a custom value to force cache busting if the identifier changes.
+  * `cacheIdentifier`: Default is a string composed by the babel-core's version, the babel-loader's version, the contents of .babelrc file if it exists and the value of the environment variable `BABEL_ENV` with a fallback to the `NODE_ENV` environment variable. This can be set to a custom value to force cache busting if the identifier changes.
 
 
   __Note:__ The `sourceMap` option is ignored, instead sourceMaps are automatically enabled when webpack is configured to use them (via the `devtool` config option).
