@@ -15,7 +15,7 @@ matrix:
     - node_js: "0.10"
       env: WEBPACK_VERSION="1"
 before_script:
-  - 'if [ "$WEBPACK_VERSION" ]; then npm install webpack@$WEBPACK_VERSION; fi'
+  - 'if [ "$WEBPACK_VERSION" ]; then npm install webpack@^$WEBPACK_VERSION; fi'
 script:
   - 'if [ -n "${LINT-}" ]; then npm run lint ; fi'
   - 'if [ -z "${LINT-}" ]; then npm run test-ci ; fi'
